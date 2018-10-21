@@ -1,0 +1,9 @@
+Hi there!
+
+for build our server make sure u correct inventory file right
+
+1st step : start base.yml
+2nd step : start nginx.yml - base nginx setup
+3rd step : start ssl.yml - create ssl keys for our domain_name / make sure u are correct domain_name and letsencrypt_email vars
+last step : start app.yml and pray (i'm kidding, looks like all fine.... i hope.... utleast it works right)
+

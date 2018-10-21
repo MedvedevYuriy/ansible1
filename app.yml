@@ -1,0 +1,67 @@
+---
+- hosts: web
+  tasks:
+          - name: update actual site.conf
+            template: src=prod-syberiayoubear.devops.srwx.net.j2 dest=/etc/nginx/sites-enabled/syberiayoubear.devops.srwx.net.conf owner=root group=root mode=0644
+            notify: restart nginx
+
+          - name: install php-fpm
+            apt: name=php-fpm state=latest
+
+          - name: install git
+            apt: name=git state=latest
+
+          - name: install golang
+            apt: name=golang state=latest
+
+          - name: create directory for app
+            file: name=/srv/app.syberiayoubear.devops.srwx.net state=directory
+
+          - name: update index.html
+            template: src=index.html dest=/srv/app.syberiayoubear.devops.srwx.net/index.html owner=root group=root mode=0644
+            notify: restart nginx
+
+          - name: update app.js
+            template: src=app.js dest=/srv/app.syberiayoubear.devops.srwx.net/app.js owner=root group=root mode=0644
+            notify: restart nginx
+
+          - name: create folder for goapp
+            file: name=/srv/app.syberiayoubear.devops.srwx.net/goapp state=directory
+
+          - name: create folder for goapp/git
+            file: name=/srv/gitgoapp state=directory
+            notify: made binfile
+
+          - name: download goapp
+            git:
+                    repo: https://github.com/vozerov/goapp.git
+                    version: api
+                    dest: /srv/gitgoapp
+
+          - name: update maingo.service
+            template: src=maingo.service dest=/etc/systemd/system/maingo.service
+            notify: activate maingo.service
+
+          - name: create folder for phpapp
+            file: name=/srv/app.syberiayoubear.devops.srwx.net/phpapp state=directory
+
+          - name: update phpapp
+            template: src=app.php dest=/srv/app.syberiayoubear.devops.srwx.net/phpapp/app.php
+
+
+
+
+  handlers:
+          - name: restart nginx
+            service: name=nginx state=restarted
+
+          - name: activate maingo.service
+            shell: systemctl daemon-reload
+            notify: start goapp
+
+          - name: start goapp
+            shell: systemctl start maingo.service
+          
+          - name: made binfile
+            shell: go build /srv/gitgoapp/main.go && mv ~/main /srv/app.syberiayoubear.devops.srwx.net/goapp/main
+

@@ -1,0 +1,22 @@
+---
+- hosts: web
+  tasks:
+          - name: Installing nginx
+            apt: allow_unauthenticated=yes name=nginx state=present
+            
+          - name: Removing default config
+            file: path=/etc/nginx/sites-enabled/default state=absent
+           
+          - name: Installing base nginx configuration
+            template: src=base-syberiayoubear.devops.srwx.net.conf.j2 dest=/etc/nginx/sites-enabled/syberiayoubear.devops.srwx.net.conf owner=root group=root mode=0644
+            notify: restart nginx
+
+  handlers:
+          - name: restart nginx
+            service: name=nginx state=restarted
+
+
+
+
+
+
