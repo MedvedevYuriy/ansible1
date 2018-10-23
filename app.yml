@@ -19,7 +19,6 @@
 
           - name: update index.html
             template: src=index.html dest=/srv/app.syberiayoubear.devops.srwx.net/index.html owner=root group=root mode=0644
-            notify: restart nginx
 
           - name: update app.js
             template: src=app.js dest=/srv/app.syberiayoubear.devops.srwx.net/app.js owner=root group=root mode=0644
